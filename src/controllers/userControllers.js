@@ -50,4 +50,5 @@ exports.deleteUser = async (req, res) => {
   moeez
   khan 
   abdul
+  786
 };
