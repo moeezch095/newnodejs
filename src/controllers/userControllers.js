@@ -15,7 +15,7 @@ exports.createUser = async (req, res) => {
 };
 
 // read
-exports.getUsers = async (req, res) => {
+exports.getUser = async (req, res) => {
   try {
     const users = await User.find();
     res.json({ count: users.length, data: users });
@@ -47,8 +47,8 @@ exports.deleteUser = async (req, res) => {
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
-  moeez
-  khan 
-  abdul
-  786
+  moeez;
+  khan;
+  abdul;
+  786;
 };
