@@ -1,28 +1,29 @@
 const express = require("express");
-const http = require("http");
 const mongoose = require("mongoose");
+const cors = require("cors");
 const dotenv = require("dotenv");
 
-const bodyParser = require("body-parser");
-const cors = require("cors");
-const connectDB = require("./config/db");
-const userRoutes = require("./routes/userRoutes");
+const connectDB = require("../src/config/db");
+const userRoutes = require("../src/routes/userRoutes");
 
 dotenv.config();
-connectDB();
+
 const app = express();
 
+// Middlewares
 app.use(cors());
-// app.use(bodyParser.json());
-// app.use(express.json());
 app.use(express.json());
+
+// Database connection
+connectDB();
+
+// Routes
 app.use("/api/users", userRoutes);
 
-mongoose.connect(process.env.MONGO_URI);
-
+// Default route
 app.get("/", (req, res) => {
-  res.send("Hello World! Server is working ");
+  res.send("Hello from Vercel Serverless API!");
 });
-app.listen(8080, function () {
-  console.log("server is running");
-});
+
+// Export for Vercel
+module.exports = app;
