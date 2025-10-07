@@ -1,4 +1,120 @@
 const User = require("../models/userModel");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
+const dotenv = require("dotenv");
+dotenv.config();
+
+// signup
+exports.signup = async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+    const existing = await User.findOne({ email });
+    if (existing)
+      return res.status(400).json({ message: "Email Already exist" });
+    const user = await User.create({ name, email, password });
+    res.status(201).json({ message: "signup successfully", data: user });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+// login api
+// exports.login = async (req, res) => {
+//   try {
+//     const { email, password } = req.body;
+//     console.log(req.body, "boddyyy from postman");
+//     const user = await User.findOne({ email });
+//     if (!user) return res.status(404).json({ message: "user not found" });
+//     const isMatch = await bcrypt.compare(password, user.password);
+//     if (!isMatch)
+//       return res.status(400).json({ message: "invalid credentials" });
+//     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+//       expiresIn: "1h",
+//     });
+//     const { password: _, ...userWithoutPassword } = user._doc;
+//     res.status(200).json({
+//       message: "login successfully",
+//       token,
+//       user: userWithoutPassword,
+//     });
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
+exports.login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    if (!isPasswordCorrect)
+      return res.status(400).json({ message: "Invalid email or password" });
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    const safeUser = user.toObject();
+    delete safeUser.password;
+
+    res.status(200).json({
+      message: "Login successful",
+      token,
+      user: safeUser,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// forgot password api
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: "user not found" });
+    const token = Math.random().toString(36).substring(2, 15);
+    user.resetToken = token;
+    user.resetTokenExpire = Date.now() + 15 * 60 * 1000;
+    await user.save();
+    res.json({ message: " reset code sent to your email", token });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// reset password api
+exports.resetPassword = async (req, res) => {
+  console.log("BODY:", req.body);
+
+  try {
+    const { token, newPassword } = req.body;
+
+    if (!token || !newPassword) {
+      return res
+        .status(400)
+        .json({ message: "Token and new password are required" });
+    }
+
+    const user = await User.findOne({
+      resetToken: token,
+      resetTokenExpire: { $gt: Date.now() },
+    });
+    if (!user)
+      return res.status(400).json({ message: "invalid or expired token" });
+    user.password = await bcrypt.hash(newPassword, 10);
+    user.resetToken = undefined;
+    user.resetTokenExpire = undefined;
+    await user.save();
+
+    res.json({ message: "password reset successfully" });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
 
 // create
 
@@ -47,8 +163,35 @@ exports.deleteUser = async (req, res) => {
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
-  moeez;
-  khan;
-  abdul;
-  786;
+};
+
+// get all users
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find();
+    res.status(200).json({
+      message: " all users fetched successfully",
+      count: users.length,
+      data: users,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// get single user by id
+exports.getUserById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "user not found" });
+    }
+    res.status(200).json({
+      message: " user fetched succesfully",
+      data: user,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };

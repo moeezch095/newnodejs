@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 
 const userSchema = new mongoose.Schema(
   {
@@ -8,8 +9,17 @@ const userSchema = new mongoose.Schema(
     age: { type: Number },
     hobbies: { type: [String] },
     isActive: { type: Boolean },
-  },
-  { timestamps: true }
+    resetToken: String,
+    resetTokenExpire: Date,
+  }
+  // { timestamps: true }
 );
-const User = mongoose.model("User", userSchema);
-module.exports = User;
+
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+  this.password = await bcrypt.hash(this.password, 10);
+  next();
+});
+
+// const User = mongoose.model("User", userSchema);
+module.exports = mongoose.model("User", userSchema);
