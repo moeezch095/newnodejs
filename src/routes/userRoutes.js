@@ -12,6 +12,7 @@ const {
   getAllUsers,
   getUserById,
 } = require("../controllers/userControllers");
+const { getAllDoctors } = require("../controllers/doctorControllers");
 
 router.post("/createUser", createUser);
 router.get("/getUser", getUser);
@@ -20,7 +21,9 @@ router.delete("/deleteUser", deleteUser);
 router.post("/signup", signup);
 router.post("/login", login);
 router.post("/forgotPassword", forgotPassword);
-router.post("/resetPassword/", resetPassword);
+router.post("/resetPassword", resetPassword);
 router.get("/all", getAllUsers);
-router.get("/:id", getUserById);
+router.get("/", getUserById);
+router.get("/getAllDoctors", getAllDoctors);
+
 module.exports = router;

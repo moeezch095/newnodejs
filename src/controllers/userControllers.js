@@ -96,7 +96,7 @@ exports.forgotPassword = async (req, res) => {
     user.resetToken = token;
     user.resetTokenExpire = Date.now() + 15 * 60 * 1000;
     await user.save();
-    res.json({ message: " reset code sent to your email", token });
+    res.json({ message: "your token of forgot pass is here", token });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -121,9 +121,7 @@ exports.resetPassword = async (req, res) => {
     });
     if (!user)
       return res.status(400).json({ message: "invalid or expired token" });
-    user.password = await bcrypt.hash(newPassword, 10);
-    user.resetToken = undefined;
-    user.resetTokenExpire = undefined;
+    user.password = newPassword;
     await user.save();
 
     res.json({ message: "password reset successfully" });
@@ -159,9 +157,15 @@ exports.getUser = async (req, res) => {
 // update
 exports.updateUser = async (req, res) => {
   try {
-    const user = await User.findByIdAndUpdate(req.query.id, req.body, {
-      new: true,
-    });
+    const { id } = req.query;
+    const { name, email, password } = req.body;
+
+    if (!id) return res.status(400).json({ message: "User ID is required" });
+    const user = await User.findByIdAndUpdate(
+      id,
+      { name, email, password },
+      { new: true }
+    );
     if (!user) return res.status(404).json({ message: "user not found" });
     res.json({ message: "user updated succesfully", data: user });
   } catch (error) {
@@ -173,7 +177,12 @@ exports.updateUser = async (req, res) => {
 
 exports.deleteUser = async (req, res) => {
   try {
-    const user = await User.findByIdAndDelete(req.query.id);
+    const { id } = req.query;
+
+    if (!id) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+    const user = await User.findByIdAndDelete(id);
     if (!user) return res.status(404).json({ message: "user  not found" });
     res.json({ message: " user deleted succesfully" });
   } catch (error) {
@@ -198,7 +207,9 @@ exports.getAllUsers = async (req, res) => {
 // get single user by id
 exports.getUserById = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { id } = req.query;
+    if (!id) return res.status(400).json({ message: "User ID required" });
+
     const user = await User.findById(id);
     if (!user) {
       return res.status(404).json({ message: "user not found" });

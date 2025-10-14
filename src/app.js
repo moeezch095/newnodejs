@@ -7,6 +7,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const connectDB = require("./config/db");
 const userRoutes = require("./routes/userRoutes");
+const doctorRoutes = require("./routes/doctorRoutes");
 
 dotenv.config();
 connectDB();
@@ -15,8 +16,9 @@ const app = express();
 app.use(cors());
 // app.use(bodyParser.json());
 // app.use(express.json());
-app.use(express.json()); 
+app.use(express.json());
 app.use("/api/users", userRoutes);
+app.use("/api/doctors", doctorRoutes);
 
 mongoose.connect(process.env.MONGO_URI);
 
@@ -26,3 +28,5 @@ app.get("/", (req, res) => {
 app.listen(8080, function () {
   console.log("server is running");
 });
+
+module.exports = app;
