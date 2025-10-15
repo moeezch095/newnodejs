@@ -26,7 +26,15 @@ const doctorSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    availability: [
+      {
+        day: String,
+        date: String,
+        timeSlots: [String],
+      },
+    ],
   },
+
   { timestamps: true }
 );
 const Doctor = mongoose.model("Doctor", doctorSchema);

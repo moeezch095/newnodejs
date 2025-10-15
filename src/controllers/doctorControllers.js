@@ -81,3 +81,47 @@ exports.getAllDoctors = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// doctor apni availability set karay ga
+
+exports.addAvailability = async (req, res) => {
+  try {
+    const doctorId = req.user.id;
+    const { availability } = req.body;
+
+    const doctor = await Doctor.findByIdAndUpdate(
+      doctorId,
+      { availability },
+      { new: true }
+    );
+    res
+      .status(200)
+      .json({
+        message: "Availability set successfully ",
+        data: doctor.availability,
+      });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// user doctor ke availability dekh  sakay
+
+exports.getDoctorAvailability = async (req, res) => {
+  try {
+    const doctorId = req.params.doctorId;
+    const doctor = await Doctor.findById(doctorId).select(
+      "name speciality availability"
+    );
+
+    if (!doctor) res.status(404).json({ message: " Doctor not found " });
+    res
+      .status(200)
+      .json({
+        message: "Doctor availability fetched successfully!",
+        data: doctor.availability,
+      });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

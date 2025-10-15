@@ -3,13 +3,15 @@ const router = express.Router();
 const {
   bookAppointment,
   getDoctorAppointments,
-  updateAppointmentStatus,
+  confirmAppointmentStatus,
+  getUserAppointments,
 } = require("../controllers/appointmentControllers");
 
 const auth = require("../middleware/auth");
 
 router.post("/book", auth, bookAppointment);
 router.get("/doctorAppointments", auth, getDoctorAppointments);
-router.put("/updateStatus", auth, updateAppointmentStatus);
+router.put("/ConfirmStatus", auth, confirmAppointmentStatus);
+router.get("/userAppointments", auth, getUserAppointments);
 
 module.exports = router;

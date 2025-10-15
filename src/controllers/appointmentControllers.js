@@ -1,10 +1,24 @@
 const Appointment = require("../models/appointmentModel");
+const Doctor = require("../models/doctorModel");
 
 // user book appointment
 exports.bookAppointment = async (req, res) => {
   try {
     const { doctorId, date, time } = req.body;
     const userId = req.user.id;
+
+    const doctor = await Doctor.findById(doctorId);
+    if (!doctor) return res.status(404).json({ message: "Doctor not found " });
+
+    const available = doctor.availability.some(
+      (slot) => slot.date === date && slot.timeSlots.includes(time)
+    );
+
+    if (!available) {
+      res
+        .status(400)
+        .json({ message: "Doctor not available at this date/time" });
+    }
 
     const appointment = await Appointment.create({
       userId,
@@ -44,7 +58,7 @@ exports.getDoctorAppointments = async (req, res) => {
 
 // 3. Doctor accept/reject appointment
 
-exports.updateAppointmentStatus = async (req, res) => {
+exports.confirmAppointmentStatus = async (req, res) => {
   try {
     const { appointmentId, status } = req.body;
 
@@ -63,6 +77,25 @@ exports.updateAppointmentStatus = async (req, res) => {
     res.status(200).json({
       message: "Appointment  successfully",
       data: appointment,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// ✅ User sees their own booked appointments
+exports.getUserAppointments = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const appointments = await Appointment.find({ userId })
+      .populate("doctorId", "name speciality")
+      .select("date time status");
+
+    res.status(200).json({
+      message: "Your appointments fetched successfully!",
+      count: appointments.length,
+      data: appointments,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
