@@ -1,32 +1,37 @@
+// ✅ 1. Required packages sabse pehle import karo
 const express = require("express");
-const http = require("http");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
-
-const bodyParser = require("body-parser");
 const cors = require("cors");
-const connectDB = require("./config/db");
-const userRoutes = require("./routes/userRoutes");
-const doctorRoutes = require("./routes/doctorRoutes");
 
+// ✅ 2. Config environment variables
 dotenv.config();
-connectDB();
+
+// ✅ 3. App create karo sabse pehle
 const app = express();
 
-app.use(cors());
-// app.use(bodyParser.json());
-// app.use(express.json());
+// ✅ 4. Middlewares
 app.use(express.json());
+app.use(cors());
+
+// ✅ 5. Routes import karo ab
+const userRoutes = require("./routes/userRoutes");
+const doctorRoutes = require("./routes/doctorRoutes");
+const appointmentRoutes = require("./routes/appointmentRoutes");
+
+// ✅ 6. Use routes
 app.use("/api/users", userRoutes);
 app.use("/api/doctors", doctorRoutes);
+app.use("/api/appointments", appointmentRoutes);
 
-mongoose.connect(process.env.MONGO_URI);
+// ✅ 7. Connect to MongoDB
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("✅ Database connected successfully"))
+  .catch((err) => console.log("❌ Database connection error:", err));
 
-app.get("/", (req, res) => {
-  res.send("Hello World! Server is working ");
+// ✅ 8. Start server
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
 });
-app.listen(8080, function () {
-  console.log("server is running");
-});
-
-module.exports = app;
