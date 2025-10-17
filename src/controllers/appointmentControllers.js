@@ -83,7 +83,7 @@ exports.confirmAppointmentStatus = async (req, res) => {
   }
 };
 
-// ✅ User sees their own booked appointments
+//  User sees their own booked appointments
 exports.getUserAppointments = async (req, res) => {
   try {
     const userId = req.user.id;

@@ -28,11 +28,17 @@ const doctorSchema = new mongoose.Schema(
     },
     availability: [
       {
-        day: String,
-        date: String,
+        day: {type: String, } ,
+        date: { type: String,},
+         startTime: {type: String},
+        endTime: { type: String},
         timeSlots: [String],
+
       },
     ],
+    isAvailability: { type: Boolean, default: false },
+
+    profileImage : { type : String, default: ""},
   },
 
   { timestamps: true }

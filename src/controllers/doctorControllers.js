@@ -23,6 +23,11 @@ exports.signupDoctor = async (req, res) => {
       experience,
       education,
     });
+    // Agar speciality provided hai to isAvailability = true
+    if (speciality) {
+      doctor.isAvailability = true;
+      await doctor.save();
+    }
 
     res.status(201).json({
       message: "Doctor registered successfully",
@@ -91,36 +96,79 @@ exports.addAvailability = async (req, res) => {
 
     const doctor = await Doctor.findByIdAndUpdate(
       doctorId,
-      { availability },
+      { availability, isAvailability: true },
       { new: true }
     );
-    res
-      .status(200)
-      .json({
-        message: "Availability set successfully ",
-        data: doctor.availability,
-      });
+    res.status(200).json({
+      message: "Availability set successfully ",
+      data: doctor.availability,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// user doctor ke availability dekh  sakay
-
+// ✅ User doctor ki availability dekh sakta hai
 exports.getDoctorAvailability = async (req, res) => {
   try {
     const doctorId = req.params.doctorId;
+
+    // Doctor find karo aur sirf name, speciality aur availability fields lo
     const doctor = await Doctor.findById(doctorId).select(
       "name speciality availability"
     );
 
-    if (!doctor) res.status(404).json({ message: " Doctor not found " });
-    res
-      .status(200)
-      .json({
-        message: "Doctor availability fetched successfully!",
-        data: doctor.availability,
+    // Agar doctor na mile
+    if (!doctor) {
+      return res.status(404).json({ message: "Doctor not found" });
+    }
+
+    // Filter karo — sirf future ya active availability show karo
+    const today = new Date();
+    const validAvailability = doctor.availability.filter((slot) => {
+      if (!slot.date) return true; // agar date field nahi hai to show kar do
+      return new Date(slot.date) >= today;
+    });
+
+    res.status(200).json({
+      message: "Doctor availability fetched successfully!",
+      doctor: {
+        name: doctor.name,
+        speciality: doctor.speciality,
+      },
+      availability: validAvailability,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// ✅ Get all doctors available on a specific day
+exports.getAvailableDoctors = async (req, res) => {
+  try {
+    const { day } = req.query;
+
+    if (!day) {
+      return res
+        .status(400)
+        .json({ message: "Please provide a day in query (e.g. ?day=Monday)" });
+    }
+
+    const doctors = await Doctor.find({ "availability.day": day }).select(
+      "name speciality availability"
+    );
+
+    if (!doctors.length) {
+      return res.status(404).json({
+        message: `No doctors available on ${day}`,
       });
+    }
+
+    res.status(200).json({
+      message: `Doctors available on ${day}`,
+      count: doctors.length,
+      data: doctors,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -3,6 +3,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
+const fileRoutes = require("./routes/fileRoutes");
+const path = require("path")
 
 // ✅ 2. Config environment variables
 dotenv.config();
@@ -13,6 +15,7 @@ const app = express();
 // ✅ 4. Middlewares
 app.use(express.json());
 app.use(cors());
+app.use("/upload", express.static(path.join(__dirname, "..", "upload")));
 
 // ✅ 5. Routes import karo ab
 const userRoutes = require("./routes/userRoutes");
