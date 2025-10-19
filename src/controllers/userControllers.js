@@ -7,7 +7,7 @@ dotenv.config();
 
 exports.signup = async (req, res) => {
   try {
-    const { name, email, password, age, hobbies, isActive } = req.body;
+    const { name, email, password, age, hobbies, isActive, image } = req.body;
 
     //  Check if email already exists
     const existing = await User.findOne({ email });
@@ -23,6 +23,7 @@ exports.signup = async (req, res) => {
       age,
       hobbies, // example: ["reading", "cricket"]
       isActive, // true or false
+      image,
     });
 
     // Response
@@ -231,7 +232,6 @@ exports.getUserById = async (req, res) => {
     const user = await User.findById(id);
     if (!user) {
       return res.status(404).json({ message: "user not found" });
-    
     }
     res.status(200).json({
       message: " user fetched succesfully",

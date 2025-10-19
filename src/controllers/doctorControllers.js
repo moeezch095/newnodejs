@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 //sign up
 exports.signupDoctor = async (req, res) => {
   try {
-    const { name, email, password, speciality, experience, education } =
+    const { name, email, password, speciality, experience, education, image } =
       req.body;
 
     const existingDoctor = await Doctor.findOne({ email });
@@ -22,6 +22,7 @@ exports.signupDoctor = async (req, res) => {
       speciality,
       experience,
       education,
+      image,
     });
     // Agar speciality provided hai to isAvailability = true
     if (speciality) {

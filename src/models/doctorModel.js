@@ -38,7 +38,7 @@ const doctorSchema = new mongoose.Schema(
     ],
     isAvailability: { type: Boolean, default: false },
 
-    profileImage : { type : String, default: ""},
+    Image : { type : String,},
   },
 
   { timestamps: true }

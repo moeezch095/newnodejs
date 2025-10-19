@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema(
     isActive: { type: Boolean },
     resetToken: String,
     resetTokenExpire: Date,
-    profileImage: { type: String, default : "" }
+    Image: { type: String },
   }
 
   // { timestamps: true }
