@@ -37,6 +37,6 @@ mongoose
 
 // ✅ Start Server
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+app.listen(PORT, "192.168.1.34", () => {
+  console.log(`🚀 Server running on http://192.168.1.34:${PORT}`);
 });

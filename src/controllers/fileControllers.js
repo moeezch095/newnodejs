@@ -1,7 +1,6 @@
 // src/controllers/fileControllers.js
 const multer = require("multer");
 const cloudinary = require("cloudinary").v2;
-const fs = require("fs");
 
 // ✅ Cloudinary Configuration
 cloudinary.config({
@@ -10,24 +9,26 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// ✅ Temporary local upload folder for multer
-const upload = multer({ dest: "temp/" });
+// ✅ 1. Memory Storage (instead of temp folder)
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
-// ✅ Upload Controller
+// ✅ 2. Upload Controller
 const uploadImage = async (req, res) => {
   try {
-    // Check if file provided
     if (!req.file) {
       return res.status(400).json({ message: "No image uploaded" });
     }
 
-    // ✅ Upload to Cloudinary
-    const result = await cloudinary.uploader.upload(req.file.path);
+    // ✅ Convert file buffer to base64
+    const base64 = req.file.buffer.toString("base64");
+    const dataURI = `data:${req.file.mimetype};base64,${base64}`;
 
-    // ✅ Delete local temp file
-    fs.unlinkSync(req.file.path);
+    // ✅ Upload directly to Cloudinary
+    const result = await cloudinary.uploader.upload(dataURI, {
+      folder: "uploads", // optional folder name in Cloudinary
+    });
 
-    // ✅ Send response
     res.status(200).json({
       message: "Image uploaded successfully!",
       url: result.secure_url,

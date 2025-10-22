@@ -1,7 +1,7 @@
 // src/routes/fileRoutes.js
 const express = require("express");
 const router = express.Router();
-const { upload, uploadImage } = require("../controllers/fileControllers.js");
+const { upload, uploadImage } = require("../controllers/fileControllers");
 
 // ✅ POST /api/file/uploadfile
 
