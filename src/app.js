@@ -40,3 +40,4 @@ mongoose
 // app.listen(PORT, "192.168.1.34", () => {
 //   console.log(`🚀 Server running on http://192.168.1.34:${PORT}`);
 // });
+module.exports = app;
