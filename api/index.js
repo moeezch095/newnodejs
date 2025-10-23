@@ -36,4 +36,9 @@ mongoose
   .catch((err) => console.log("❌ MongoDB connection error:", err));
 
 // ✅ Export handler for Vercel (no need for app.listen)
+// ✅ Add this just before module.exports = app;
+
+app.get("/", (req, res) => {
+  res.send("🚀 API is running successfully on Vercel!");
+});
 module.exports = app;
