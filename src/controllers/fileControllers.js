@@ -1,6 +1,7 @@
 const multer = require("multer");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const cloudinary = require("cloudinary").v2;
+require("dotenv").config(); 
 
 // 🔧 Cloudinary Config
 cloudinary.config({
@@ -12,24 +13,24 @@ cloudinary.config({
 // 🗂️ Storage directly to Cloudinary
 const storage = new CloudinaryStorage({
   cloudinary,
-  params: {
-    folder: "uploads", // Folder name in Cloudinary
-    allowed_formats: ["jpg", "png", "jpeg"],
-  },
+  params: async (req, file) => ({
+    folder: "uploads",
+    format: file.mimetype.split("/")[1], // auto-detect jpg/png/jpeg
+    public_id: `${Date.now()}-${file.originalname}`,
+  }),
 });
+
 
 const upload = multer({ storage });
 
 // 📤 Controller
 const uploadImage = async (req, res) => {
   try {
-    console.log("File received:", req.file);
-
     if (!req.file) {
       return res.status(400).json({ message: "No image uploaded" });
     }
 
-    res.json({
+    res.status(200).json({
       message: "Image uploaded successfully!",
       url: req.file.path, // Cloudinary URL
     });
