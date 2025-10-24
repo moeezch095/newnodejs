@@ -1,20 +1,17 @@
-// src/app.js
 const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const path = require("path");
 
-// ✅ Load env variables
 dotenv.config();
-
 const app = express();
 
 // ✅ Middlewares
 app.use(express.json());
 app.use(cors());
 
-// ✅ Serve static uploads folder (if you store locally)
+// ✅ Static files (optional)
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // ✅ Import routes
@@ -34,6 +31,10 @@ mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("✅ Database connected successfully"))
   .catch((err) => console.log("❌ Database connection error:", err));
+
+// ✅ Swagger Docs (use the one you created in /swagger/swagger.js)
+const swaggerDocs = require("./swagger/swagger");
+swaggerDocs(app);
 
 // ✅ Start Server
 const PORT = process.env.PORT || 8080;

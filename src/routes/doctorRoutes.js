@@ -1,3 +1,42 @@
+/**
+ * @swagger
+ * tags:
+ *   name: Doctors
+ *   description: Doctor management APIs
+ */
+
+/**
+ * @swagger
+ * /api/doctors:
+ *   get:
+ *     summary: Get all doctors
+ *     tags: [Doctors]
+ *     responses:
+ *       200:
+ *         description: List of all doctors
+ */
+
+/**
+ * @swagger
+ * /api/doctors/{id}:
+ *   get:
+ *     summary: Get doctor by ID
+ *     tags: [Doctors]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Doctor details found
+ */
+
+
+
+
+
 const express = require("express");
 const router = express.Router();
 // const upload = require("../middleware/upload");
