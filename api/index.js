@@ -3,72 +3,82 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const path = require("path");
-const connectDB = require("../src/config/db");
+const mongoose = require("mongoose");
 
 // ✅ Load env
 dotenv.config();
 
-// ✅ App init
+// ✅ Express init
 const app = express();
 app.use(express.json());
 app.use(cors());
 
-// ✅ Connect MongoDB
-connectDB();
+// ✅ MongoDB connect
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("✅ MongoDB connected successfully"))
+  .catch((err) => console.error("❌ Mongo connection error:", err));
 
-// ✅ Static folder (for local or uploaded files)
-app.use("/uploads", express.static(path.join(__dirname, "../src/uploads")));
-
-// ✅ Import routes
+// ✅ Routes import
 const userRoutes = require("../src/routes/userRoutes");
 const doctorRoutes = require("../src/routes/doctorRoutes");
 const appointmentRoutes = require("../src/routes/appointmentRoutes");
 const fileRoutes = require("../src/routes/fileRoutes");
 
-// ✅ Use routes
+// ✅ Routes use
 app.use("/api/users", userRoutes);
 app.use("/api/doctors", doctorRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/file", fileRoutes);
 
-// ✅ Swagger Docs
+// ✅ Swagger Setup (💥 this is the main fix)
 const swaggerUi = require("swagger-ui-express");
 const swaggerJsdoc = require("swagger-jsdoc");
+const fs = require("fs");
 
-// 👇 IMPORTANT FIX: Absolute path use karo (vercel handle kar sakta hai)
-const swaggerSpec = swaggerJsdoc({
+// 👇 Dynamic routes path fix (works on vercel)
+let routesPath;
+try {
+  routesPath = fs.existsSync(path.join(process.cwd(), "src/routes"))
+    ? path.join(process.cwd(), "src/routes/*.js")
+    : path.join(__dirname, "../src/routes/*.js");
+} catch (err) {
+  console.error("Path resolution failed:", err);
+}
+
+const swaggerOptions = {
   definition: {
     openapi: "3.0.0",
     info: {
       title: "Doctor & User Appointment API",
       version: "1.0.0",
-      description: "API documentation for Doctor and User Appointment App",
+      description: "Swagger Docs for Doctor & User APIs",
     },
     servers: [
-      {
-        url: "https://docanduser.vercel.app", // 👈 apna deployed URL
-      },
+      { url: "https://docanduser.vercel.app" }, // 👈 deployed URL
+      { url: "http://localhost:8080" } // 👈 local test URL
     ],
-    components: {
-      securitySchemes: {
-        bearerAuth: {
-          type: "http",
-          scheme: "bearer",
-          bearerFormat: "JWT",
-        },
-      },
-    },
-    security: [{ bearerAuth: [] }],
   },
-  // 👇 Absolute path fix for Vercel
-  apis: [path.join(__dirname, "../src/routes/*.js")],
-});
+  apis: [routesPath],
+};
 
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+let swaggerSpec;
+try {
+  swaggerSpec = swaggerJsdoc(swaggerOptions);
+  console.log("✅ Swagger generated successfully");
+} catch (err) {
+  console.error("❌ Swagger generation failed:", err);
+}
 
+if (swaggerSpec) {
+  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  console.log("✅ Swagger docs available at /api-docs");
+}
+
+// ✅ Root test route
 app.get("/", (req, res) => {
-  res.send("🚀 API is running successfully on Vercel!");
+  res.send("🚀 API running successfully! Check /api-docs for Swagger.");
 });
 
-// ✅ Export for Vercel
+// ✅ Export app for Vercel
 module.exports = app;
