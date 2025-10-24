@@ -1,20 +1,22 @@
 // api/index.js
 const express = require("express");
-const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const path = require("path");
 const connectDB = require("../src/config/db");
-// ✅ Load env variables
+
+// ✅ Load env
 dotenv.config();
 
+// ✅ App init
 const app = express();
-
-// ✅ Middlewares
 app.use(express.json());
 app.use(cors());
 
-// ✅ Serve static uploads folder (optional, for local testing)
+// ✅ Connect MongoDB
+connectDB();
+
+// ✅ Static folder (for local or uploaded files)
 app.use("/uploads", express.static(path.join(__dirname, "../src/uploads")));
 
 // ✅ Import routes
@@ -28,21 +30,45 @@ app.use("/api/users", userRoutes);
 app.use("/api/doctors", doctorRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/file", fileRoutes);
-connectDB();
-// // ✅ MongoDB connection (connect only once)
-// mongoose
-//   .connect(process.env.MONGO_URI)
-//   .then(() => console.log("✅ MongoDB connected successfully"))
-//   .catch((err) => console.log("❌ MongoDB connection error:", err));
 
-// ✅ Export handler for Vercel (no need for app.listen)
-// ✅ Add this just before module.exports = app;
+// ✅ Swagger Docs
+const swaggerUi = require("swagger-ui-express");
+const swaggerJsdoc = require("swagger-jsdoc");
 
-// ✅ Swagger Setup
-const swaggerDocs = require("../src/swagger/swagger");
-swaggerDocs(app);
+// 👇 IMPORTANT FIX: Absolute path use karo (vercel handle kar sakta hai)
+const swaggerSpec = swaggerJsdoc({
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "Doctor & User Appointment API",
+      version: "1.0.0",
+      description: "API documentation for Doctor and User Appointment App",
+    },
+    servers: [
+      {
+        url: "https://docanduser.vercel.app", // 👈 apna deployed URL
+      },
+    ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
+    },
+    security: [{ bearerAuth: [] }],
+  },
+  // 👇 Absolute path fix for Vercel
+  apis: [path.join(__dirname, "../src/routes/*.js")],
+});
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.get("/", (req, res) => {
   res.send("🚀 API is running successfully on Vercel!");
 });
+
+// ✅ Export for Vercel
 module.exports = app;
