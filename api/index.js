@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const path = require("path");
-const connectDB = require("../src/config/db")
+const connectDB = require("../src/config/db");
 // ✅ Load env variables
 dotenv.config();
 
@@ -37,6 +37,10 @@ connectDB();
 
 // ✅ Export handler for Vercel (no need for app.listen)
 // ✅ Add this just before module.exports = app;
+
+// ✅ Swagger Setup
+const swaggerDocs = require("../src/swagger/swagger");
+swaggerDocs(app);
 
 app.get("/", (req, res) => {
   res.send("🚀 API is running successfully on Vercel!");
