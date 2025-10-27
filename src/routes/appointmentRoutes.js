@@ -7,20 +7,9 @@
 
 /**
  * @swagger
- * /api/appointments:
- *   get:
- *     summary: Get all appointments
- *     tags: [Appointments]
- *     responses:
- *       200:
- *         description: List of appointments
- */
-
-/**
- * @swagger
- * /api/appointments:
+ * /api/appointments/book:
  *   post:
- *     summary: Create a new appointment
+ *     summary: Book a new appointment
  *     tags: [Appointments]
  *     requestBody:
  *       required: true
@@ -35,15 +24,56 @@
  *                 type: string
  *               date:
  *                 type: string
- *                 example: 2025-10-24
+ *                 example: 2025-10-25
  *     responses:
  *       200:
  *         description: Appointment created successfully
  */
 
+/**
+ * @swagger
+ * /api/appointments/doctorAppointments:
+ *   get:
+ *     summary: Get doctor’s appointments
+ *     tags: [Appointments]
+ *     responses:
+ *       200:
+ *         description: Doctor’s appointment list
+ */
 
+/**
+ * @swagger
+ * /api/appointments/ConfirmStatus:
+ *   put:
+ *     summary: Confirm or update appointment status
+ *     tags: [Appointments]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               appointmentId:
+ *                 type: string
+ *               status:
+ *                 type: string
+ *                 example: confirmed
+ *     responses:
+ *       200:
+ *         description: Status updated successfully
+ */
 
-
+/**
+ * @swagger
+ * /api/appointments/userAppointments:
+ *   get:
+ *     summary: Get user's appointments
+ *     tags: [Appointments]
+ *     responses:
+ *       200:
+ *         description: List of user's appointments
+ */
 
 const express = require("express");
 const router = express.Router();

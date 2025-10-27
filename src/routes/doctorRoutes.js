@@ -7,7 +7,55 @@
 
 /**
  * @swagger
- * /api/doctors:
+ * /api/doctors/signup:
+ *   post:
+ *     summary: Register a new doctor
+ *     tags: [Doctors]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               specialization:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Doctor registered successfully
+ */
+
+/**
+ * @swagger
+ * /api/doctors/login:
+ *   post:
+ *     summary: Doctor login
+ *     tags: [Doctors]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Login successful
+ */
+
+/**
+ * @swagger
+ * /api/doctors/getAllDoctors:
  *   get:
  *     summary: Get all doctors
  *     tags: [Doctors]
@@ -18,19 +66,30 @@
 
 /**
  * @swagger
- * /api/doctors/{id}:
- *   get:
- *     summary: Get doctor by ID
+ * /api/doctors/addAvailability:
+ *   post:
+ *     summary: Add doctor's availability
  *     tags: [Doctors]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               doctorId:
+ *                 type: string
+ *               date:
+ *                 type: string
+ *                 example: 2025-10-25
+ *               timeSlots:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example: ["10:00", "11:00"]
  *     responses:
  *       200:
- *         description: Doctor details found
+ *         description: Availability added successfully
  */
 
 

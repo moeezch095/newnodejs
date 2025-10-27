@@ -33,8 +33,8 @@ mongoose
   .catch((err) => console.log("❌ Database connection error:", err));
 
 // ✅ Swagger Docs (use the one you created in /swagger/swagger.js)
-// const swaggerDocs = require("./swagger/swagger");
-// swaggerDocs(app);
+const swaggerDocs = require("./swagger/swagger");
+swaggerDocs(app);
 
 // ✅ Start Server
 const PORT = process.env.PORT || 8080;

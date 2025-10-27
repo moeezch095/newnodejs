@@ -1,8 +1,8 @@
 /**
  * @swagger
- * /api/users/register:
+ * /api/users/signup:
  *   post:
- *     summary: Register a new user
+ *     summary: signup a new user
  *     tags: [Users]
  *     requestBody:
  *       required: true
@@ -13,13 +13,27 @@
  *             properties:
  *               name:
  *                 type: string
+ *                 example: Moeez
  *               email:
  *                 type: string
+ *                 example: moeez@gmail.com
  *               password:
  *                 type: string
+ *                 example: 123456
  *     responses:
  *       200:
  *         description: User registered successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: User created successfully
  */
 
 /**
@@ -37,15 +51,25 @@
  *             properties:
  *               email:
  *                 type: string
+ *                 example: moeez@gmail.com
  *               password:
  *                 type: string
+ *                 example: 123456
  *     responses:
  *       200:
  *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 token:
+ *                   type: string
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
  */
-
-
-
 
 const express = require("express");
 const router = express.Router();
