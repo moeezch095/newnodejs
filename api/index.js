@@ -14,10 +14,10 @@ app.use(express.json());
 app.use(cors());
 
 // ✅ MongoDB connect
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ MongoDB connected successfully"))
-  .catch((err) => console.error("❌ Mongo connection error:", err));
+// mongoose
+//   .connect(process.env.MONGO_URI)
+//   .then(() => console.log("✅ MongoDB connected successfully"))
+//   .catch((err) => console.error("❌ Mongo connection error:", err));
 
 // ✅ Routes import
 const userRoutes = require("../src/routes/userRoutes");

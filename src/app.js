@@ -3,9 +3,12 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const path = require("path");
+// const connectDB = require("./config/db");
+
 
 dotenv.config();
 const app = express();
+
 
 // ✅ Middlewares
 app.use(express.json());
@@ -27,14 +30,16 @@ app.use("/api/appointments", appointmentRoutes);
 app.use("/api/file", fileRoutes);
 
 // ✅ Connect MongoDB
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ Database connected successfully"))
-  .catch((err) => console.log("❌ Database connection error:", err));
+// mongoose
+//   .connect(process.env.MONGO_URI)
+//   .then(() => console.log("✅ Database connected successfully"))
+//   .catch((err) => console.log("❌ Database connection error:", err));
 
 // ✅ Swagger Docs (use the one you created in /swagger/swagger.js)
 const swaggerDocs = require("./swagger/swagger");
+const connectDB = require("./config/db");
 swaggerDocs(app);
+connectDB();
 
 // ✅ Start Server
 const PORT = process.env.PORT || 8080;
