@@ -2,7 +2,6 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
-const path = require("path");
 const mongoose = require("mongoose");
 
 // ✅ Load env
@@ -14,10 +13,10 @@ app.use(express.json());
 app.use(cors());
 
 // ✅ MongoDB connect
-// mongoose
-//   .connect(process.env.MONGO_URI)
-//   .then(() => console.log("✅ MongoDB connected successfully"))
-//   .catch((err) => console.error("❌ Mongo connection error:", err));
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("✅ MongoDB connected successfully"))
+  .catch((err) => console.error("❌ Mongo connection error:", err));
 
 // ✅ Routes import
 const userRoutes = require("../src/routes/userRoutes");
@@ -31,12 +30,9 @@ app.use("/api/doctors", doctorRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/file", fileRoutes);
 
-
-
-
 // ✅ Root test route
 app.get("/", (req, res) => {
-  res.send("🚀 API running successfully!.");
+  res.send("🚀 API running successfully!");
 });
 
 // ✅ Export app for Vercel
