@@ -1,0 +1,1 @@
+# Dependencies — kabhi push mat karo node_modules/ # Environment variables — secret keys hoti hain .env .env.local .env.development .env.production # OS files .DS_Store Thumbs.db # Logs *.log npm-debug.log* # Build output dist/ build/
